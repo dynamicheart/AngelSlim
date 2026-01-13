@@ -209,6 +209,7 @@ def main(fp8_path, int8_path, num_workers):
 
     file_subsets = [safetensor_files[i::num_workers] for i in range(num_workers)]
 
+    mp.set_start_method("spawn", force=True)
     manager = mp.Manager()
     return_dict = manager.dict()
     processes = []
