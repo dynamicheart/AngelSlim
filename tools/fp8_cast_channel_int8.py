@@ -4,7 +4,7 @@
 #   Copyright (c) 2023 DeepSeek
 #   https://github.com/deepseek-ai/DeepSeek-V3/blob/main/inference/fp8_cast_bf16.py
 #   https://github.com/deepseek-ai/DeepSeek-V3/blob/main/inference/kernel.py
-#   https://huggingface.co/meituan/DeepSeek-R1-Channel-INT8/blob/main/inference/bf16_cast_channel_int8.py (Meituan fork)
+#   https://huggingface.co/meituan/DeepSeek-R1-Channel-INT8/blob/main/inference/bf16_cast_channel_int8.py (Meituan fork) # noqa: E501
 #
 # Additional contributions:
 #   Copyright (c) 2026 Kunlunxin (Beijing) Technology Co., Ltd. (Kunlunxin)
@@ -66,19 +66,21 @@ def weight_dequant(
     Args:
         x (torch.Tensor): The quantized weight tensor of shape (M, N).
         s (torch.Tensor): The scale tensor of shape (M//block_size, N//block_size).
-        block_size (int, optional): The block size to use for dequantization. Defaults to 128.
+        block_size (int, optional): The block size to use for dequantization.
+                                    Defaults to 128.
 
     Returns:
         torch.Tensor: The dequantized weight tensor of the same shape as `x`.
 
     Raises:
-        AssertionError: If `x` or `s` are not contiguous or if their dimensions are not 2.
+        AssertionError: If `x` or `s` are not contiguous or if their dimensions
+                        are not 2.
     """
     assert x.is_contiguous() and s.is_contiguous(), "Input tensors must be contiguous"
     assert x.dim() == 2 and s.dim() == 2, "Input tensors must have 2 dimensions"
     M, N = x.size()
     y = torch.empty_like(x, dtype=torch.get_default_dtype())
-    grid = lambda meta: (
+    grid = lambda meta: (  # noqa: E731
         triton.cdiv(M, meta["BLOCK_SIZE"]),
         triton.cdiv(N, meta["BLOCK_SIZE"]),
     )
